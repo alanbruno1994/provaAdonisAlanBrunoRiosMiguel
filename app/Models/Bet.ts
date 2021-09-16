@@ -1,21 +1,24 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
-import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import { BaseModel, column, hasMany, HasMany, BelongsTo, belongsTo } from '@ioc:Adonis/Lucid/Orm'
+import { schema } from '@ioc:Adonis/Core/Validator'
+import BetRules from './Rules/BetRules'
+import User from './User'
+import Game from './Game'
 export default class Bet extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
   @column()
-  public userId:number;
+  public userId: number
 
   @column()
-  public gameID:number;
+  public gameId: number
 
   @column()
-  public priceGame:number;
+  public priceGame: number
 
   @column()
-  public numberChoose:string;
+  public numberChoose: string
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
@@ -23,24 +26,25 @@ export default class Bet extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-  public static getRulesValidation()
-  {
+  public static getRulesValidation() {
     return schema.create({
-      numberChoose: schema.string({}, [       
-        rules.required()              
-      ]),     
-       userId: schema.number(
-        [
-            rules.required()                   
-        ]),
-       gameID: schema.number(
-        [
-            rules.required()                   
-        ]),
-       priceGame: schema.number(
-        [
-            rules.required()                   
-        ]),
+      numberChoose: BetRules.numberChoose(),
+      gameId: BetRules.gameId(),
+      priceGame: BetRules.priceGame(),
     })
   }
+
+  public static getPatchValidation(inputs: object) {
+    let rules = {}
+    for (let value in inputs) {
+      rules[value] = BetRules.chooseRule(value)
+    }
+    return schema.create(rules)
+  }
+
+  @belongsTo(() => User)
+  public users: BelongsTo<typeof User>
+
+  @belongsTo(() => Game)
+  public games: BelongsTo<typeof Game>
 }

@@ -5,13 +5,16 @@ import {
   beforeSave,
   BelongsTo,
   belongsTo,
+  hasMany,
+  HasMany,
   column,
-  HasOne,
-  hasOne,
 } from '@ioc:Adonis/Lucid/Orm'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Hash from '@ioc:Adonis/Core/Hash'
 import AccessProfile from './AccessProfile'
+import Mail from '@ioc:Adonis/Addons/Mail'
+import UserRules from './Rules/UserRules'
+import Bet from './Bet'
 export default class User extends BaseModel {
   @column({ isPrimary: true })
   public id: number
@@ -42,34 +45,38 @@ export default class User extends BaseModel {
 
   public static getRulesValidation() {
     return schema.create({
-      email: schema.string({}, [
-        rules.email(),
-        rules.required(),
-        rules.unique({ table: 'users', column: 'email' }),
-      ]),
-      password: schema.string({}, [rules.confirmed(), rules.minLength(6), rules.maxLength(15)]),
-      name: schema.string({}, [rules.required(), rules.minLength(10)]),
-      accessProfileId: schema.number([rules.required()]),
+      email: UserRules.email(),
+      password: UserRules.password(),
+      name: UserRules.name(),
+      accessProfileId: UserRules.accessProfileId(),
     })
   }
 
   public static getRulesValidationLogin() {
     return schema.create({
-      email: schema.string({}, [rules.email(), rules.required()]),
-      password: schema.string({}, [rules.minLength(6), rules.maxLength(15)]),
+      email: UserRules.accessProfileId(),
+      password: UserRules.password(),
     })
   }
 
   public static getRulesValidationRecoverPassword() {
     return schema.create({
-      email: schema.string({}, [rules.email(), rules.required()]),
+      email: UserRules.email(),
     })
   }
 
   public static getRulesValidationAlterPassword() {
     return schema.create({
-      password: schema.string({}, [rules.minLength(6), rules.maxLength(15)]),
+      password: UserRules.password(),
     })
+  }
+
+  public static getPatchValidation(inputs: object) {
+    let rules = {}
+    for (let value in inputs) {
+      rules[value] = UserRules.chooseRule(value)
+    }
+    return schema.create(rules)
   }
 
   //Aqui colocamos um beforeSave usado para ser chamdo antes de salvar o usuario
@@ -83,8 +90,18 @@ export default class User extends BaseModel {
   @afterCreate()
   public static protectedPassword(user: User) {
     user.password = ''
+    Mail.send((message) => {
+      message
+        .to(user.email) //aqui para que recebera o e-mail
+        .from('sosvari21@gmail.com', 'Bruno da Luby') //Aqui seria de quem estou enviado o e-mail
+        .subject('You have registered to the betting system!') //Aqui seria o assunto do e-mail
+        .htmlView('email/new_user')
+    })
   }
 
   @belongsTo(() => AccessProfile)
   public access: BelongsTo<typeof AccessProfile>
+
+  @hasMany(() => Bet)
+  public bets: HasMany<typeof Bet>
 }

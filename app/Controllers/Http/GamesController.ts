@@ -17,17 +17,22 @@ export default class GamesController {
       let user = await Game.findByOrFail('id', params.id)
       return user
     } catch (erro) {
-      return response.badRequest({ mensage: 'Not found user' })
+      return response.badRequest({ mensage: 'Not found game' })
     }
   }
 
   public async update({ request, params, response }: HttpContextContract) {
+    if (request.method() === 'PUT') {
+      await request.validate({ schema: Game.getRulesValidation() })
+    } else {
+      await request.validate({ schema: Game.getPatchValidation(request.all()) })
+    }
     try {
       let game = await Game.findByOrFail('id', params.id)
       await game.merge(request.all()).save()
       return game
     } catch (erro) {
-      return response.badRequest({ mensage: 'Not found user' })
+      return response.badRequest({ mensage: 'Not found game' })
     }
   }
 

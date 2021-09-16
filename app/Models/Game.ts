@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import GamesRules from './Rules/GameRules'
 export default class Game extends BaseModel {
   @column({ isPrimary: true })
   public id: number
@@ -29,30 +30,22 @@ export default class Game extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-  public static getRulesValidation()
-  {
+  public static getRulesValidation() {
     return schema.create({
-      typeGame: schema.string({}, [       
-        rules.required()              
-      ]),
-       description: schema.string({}, [       
-        rules.required()              
-      ]),
-       color: schema.string({}, [       
-        rules.required()              
-      ]),
-       maxNumber: schema.number(
-        [
-            rules.required()                   
-        ]),
-       range: schema.number(
-        [
-            rules.required()                   
-        ]),
-       price: schema.number(
-        [
-            rules.required()                   
-        ]),
+      typeGame: GamesRules.typeGame(),
+      description: GamesRules.description(),
+      color: GamesRules.color(),
+      maxNumber: GamesRules.maxNumber(),
+      range: GamesRules.range(),
+      price: GamesRules.price(),
     })
+  }
+
+  public static getPatchValidation(inputs: object) {
+    let rules = {}
+    for (let value in inputs) {
+      rules[value] = GamesRules.chooseRule(value)
+    }
+    return schema.create(rules)
   }
 }
