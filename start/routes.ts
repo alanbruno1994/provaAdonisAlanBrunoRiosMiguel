@@ -19,6 +19,8 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
+import './routes/ReleasedRoutes';
+import './routes/RoutesProtection';
 
 Route.get('/', async () => {
   return { hello: 'world' }

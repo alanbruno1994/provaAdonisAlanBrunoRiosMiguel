@@ -1,17 +1,17 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
 export default class Users extends BaseSchema {
-   protected tableName = 'users'
+  protected tableName = 'users'
 
-  public async up () {
+  public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.string('name').notNullable();
-      table.string('email').unique().notNullable();
-      table.string('password').notNullable();
+      table.string('name').notNullable()
+      table.string('email').unique().notNullable()
+      table.string('password').notNullable()
       table.integer('access_profile_id').unsigned().references('id').inTable('access_profiles')
       table.string('token')
-      table.timestamp('create_at_token',{ useTz: true })
+      table.timestamp('create_at_token', { useTz: true }).nullable()
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
@@ -20,7 +20,7 @@ export default class Users extends BaseSchema {
     })
   }
 
-  public async down () {
+  public async down() {
     this.schema.dropTable(this.tableName)
   }
 }

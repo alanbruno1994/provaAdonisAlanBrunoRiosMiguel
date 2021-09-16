@@ -8,10 +8,10 @@ export default class Games extends BaseSchema {
       table.increments('id')
       table.string('type_game',120).notNullable();
       table.text('description').notNullable();
-      table.string('_range').notNullable();
+      table.integer('range').notNullable();
       table.float('price').notNullable();
       table.integer('max_number').notNullable();
-      table.string('color',120)  
+      table.string('color',120).notNullable();  
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
