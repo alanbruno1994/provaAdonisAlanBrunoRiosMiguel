@@ -1,29 +1,23 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import Database from '@ioc:Adonis/Lucid/Database'
 import Bet from 'App/Models/Bet'
 
 export default class BetsController {
-  public async index({ params, request }: HttpContextContract) {
-    if (request.only(['all']).all) {
-      console.log('puxa tudo', request.only(['all']).all)
-      return await Bet.query().preload('users').preload('games')
-    }
-    return await Bet.all()
+  public async index({}: HttpContextContract) {
+    return await Bet.query().select('price_game', 'number_choose', 'secure_id')
   }
 
   public async store({ request, auth }: HttpContextContract) {
     await request.validate({ schema: Bet.getRulesValidation() })
     let bet = request.only(['gameId', 'priceGame', 'numberChoose'])
-    return await Bet.create({ ...bet, userId: auth.user?.id })
+    let { priceGame, numberChoose, secureId } = await Bet.create({ ...bet, userId: auth.user?.id })
+    return { priceGame, numberChoose, secureId }
   }
 
-  public async show({ params, response, request }: HttpContextContract) {
+  public async show({ params, response }: HttpContextContract) {
     try {
-      let bet = await Bet.findByOrFail('id', params.id)
-      if (request.only(['all']).all) {
-        await bet.load('users')
-        await bet.load('games')
-      }
-      return bet
+      let { priceGame, numberChoose, secureId } = await Bet.findByOrFail('secure_id', params.id)
+      return { priceGame, numberChoose, secureId }
     } catch (erro) {
       return response.badRequest({ mensage: 'Not found bet' })
     }
@@ -31,9 +25,9 @@ export default class BetsController {
 
   public async update({ request, params, response }: HttpContextContract) {
     try {
-      let bet = await Bet.findByOrFail('id', params.id)
-      await bet.merge(request.all()).save()
-      return bet
+      let bet = await Bet.findByOrFail('secure_id', params.id)
+      let { priceGame, numberChoose, secureId } = await bet.merge(request.all()).save()
+      return { priceGame, numberChoose, secureId }
     } catch (erro) {
       return response.badRequest({ mensage: 'Not found bet' })
     }
@@ -41,7 +35,7 @@ export default class BetsController {
 
   public async destroy({ params, response }: HttpContextContract) {
     try {
-      let bet = await Bet.findByOrFail('id', params.id)
+      let bet = await Bet.findByOrFail('secure_id', params.id)
       await bet.delete()
     } catch (erro) {
       return response.badRequest({ mensage: 'Not found bet' })

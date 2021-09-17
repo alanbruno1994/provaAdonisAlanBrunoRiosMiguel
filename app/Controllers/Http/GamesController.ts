@@ -3,19 +3,59 @@ import Game from 'App/Models/Game'
 
 export default class GamesController {
   public async index({}: HttpContextContract) {
-    return await Game.all()
+    return await Game.query().select(
+      'typeGame',
+      'description',
+      'range',
+      'price',
+      'maxNumber',
+      'color',
+      'secure_id'
+    )
   }
 
   public async store({ request }: HttpContextContract) {
     await request.validate({ schema: Game.getRulesValidation() })
     let game = request.only(['typeGame', 'description', 'range', 'price', 'maxNumber', 'color'])
-    return await Game.create(game)
+    let { typeGame, description, price, color, maxNumber, range, secureId, createdAt, updatedAt } =
+      await Game.create(game)
+    return {
+      typeGame,
+      description,
+      price,
+      color,
+      maxNumber,
+      range,
+      secureId,
+      createdAt,
+      updatedAt,
+    }
   }
 
   public async show({ params, response }: HttpContextContract) {
     try {
-      let user = await Game.findByOrFail('id', params.id)
-      return user
+      let {
+        typeGame,
+        description,
+        price,
+        color,
+        maxNumber,
+        range,
+        secureId,
+        createdAt,
+        updatedAt,
+      } = await Game.findByOrFail('secure_id', params.id)
+      return {
+        typeGame,
+        description,
+        price,
+        color,
+        maxNumber,
+        range,
+        secureId,
+        createdAt,
+        updatedAt,
+      }
     } catch (erro) {
       return response.badRequest({ mensage: 'Not found game' })
     }
@@ -28,9 +68,29 @@ export default class GamesController {
       await request.validate({ schema: Game.getPatchValidation(request.all()) })
     }
     try {
-      let game = await Game.findByOrFail('id', params.id)
-      await game.merge(request.all()).save()
-      return game
+      let game = await Game.findByOrFail('secure_id', params.id)
+      let {
+        typeGame,
+        description,
+        price,
+        color,
+        maxNumber,
+        range,
+        secureId,
+        createdAt,
+        updatedAt,
+      } = await game.merge(request.all()).save()
+      return {
+        typeGame,
+        description,
+        price,
+        color,
+        maxNumber,
+        range,
+        secureId,
+        createdAt,
+        updatedAt,
+      }
     } catch (erro) {
       return response.badRequest({ mensage: 'Not found game' })
     }
@@ -38,7 +98,7 @@ export default class GamesController {
 
   public async destroy({ params, response }: HttpContextContract) {
     try {
-      let game = await Game.findByOrFail('id', params.id)
+      let game = await Game.findByOrFail('secure_id', params.id)
       await game.delete()
     } catch (erro) {
       return response.badRequest({ mensage: 'Not found game' })

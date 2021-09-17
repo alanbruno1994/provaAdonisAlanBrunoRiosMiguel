@@ -1,17 +1,18 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
 export default class Games extends BaseSchema {
-   protected tableName = 'games'
+  protected tableName = 'games'
 
-  public async up () {
+  public async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('id')
-      table.string('type_game',120).notNullable();
-      table.text('description').notNullable();
-      table.integer('range').notNullable();
-      table.float('price').notNullable();
-      table.integer('max_number').notNullable();
-      table.string('color',120).notNullable();  
+      table.increments('id').primary()
+      table.string('secure_id').unique().notNullable()
+      table.string('type_game', 120).notNullable()
+      table.text('description').notNullable()
+      table.integer('range').notNullable()
+      table.float('price').notNullable()
+      table.integer('max_number').notNullable()
+      table.string('color', 120).notNullable()
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
@@ -20,7 +21,7 @@ export default class Games extends BaseSchema {
     })
   }
 
-  public async down () {
+  public async down() {
     this.schema.dropTable(this.tableName)
   }
 }

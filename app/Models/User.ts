@@ -8,6 +8,9 @@ import {
   hasMany,
   HasMany,
   column,
+  beforeCreate,
+  afterFetch,
+  afterFind,
 } from '@ioc:Adonis/Lucid/Orm'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Hash from '@ioc:Adonis/Core/Hash'
@@ -15,9 +18,14 @@ import AccessProfile from './AccessProfile'
 import Mail from '@ioc:Adonis/Addons/Mail'
 import UserRules from './Rules/UserRules'
 import Bet from './Bet'
+import { v4 as uuidv4 } from 'uuid'
+
 export default class User extends BaseModel {
   @column({ isPrimary: true })
   public id: number
+
+  @column()
+  public secureId: string
 
   @column()
   public email: string
@@ -54,14 +62,14 @@ export default class User extends BaseModel {
 
   public static getRulesValidationLogin() {
     return schema.create({
-      email: UserRules.accessProfileId(),
-      password: UserRules.password(),
+      email: UserRules.emailLogin(),
+      password: UserRules.passwordLogin(),
     })
   }
 
   public static getRulesValidationRecoverPassword() {
     return schema.create({
-      email: UserRules.email(),
+      email: UserRules.emailLogin(),
     })
   }
 
@@ -104,4 +112,11 @@ export default class User extends BaseModel {
 
   @hasMany(() => Bet)
   public bets: HasMany<typeof Bet>
+
+  //Aqui usamos um hoook, de modo que antes de criar o usuario, ou persirtir ele no banco de dados sera chamado esse metodo o qual
+  //vai criar o id unico para ser armazena no banco de dados
+  @beforeCreate()
+  public static assignUuid(user: User) {
+    user.secureId = '' + uuidv4() //aqui cria o id unico
+  }
 }

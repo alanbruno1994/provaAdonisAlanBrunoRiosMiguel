@@ -5,8 +5,16 @@ export default class UserRules {
     return schema.string({}, [rules.email(), rules.unique({ table: 'users', column: 'email' })])
   }
 
+  public static emailLogin() {
+    return schema.string({}, [rules.email()])
+  }
+
   public static password() {
     return schema.string({}, [rules.confirmed(), rules.minLength(6), rules.maxLength(15)])
+  }
+
+  public static passwordLogin() {
+    return schema.string({}, [rules.minLength(6), rules.maxLength(15)])
   }
 
   public static name() {
