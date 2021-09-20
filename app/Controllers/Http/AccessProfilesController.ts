@@ -14,7 +14,7 @@ export default class AccessProfilesController {
 
   public async show({ params, response }: HttpContextContract) {
     try {
-      let access = await AccessProfile.findByOrFail('secure_id', params.id)
+      let access = await AccessProfile.findByOrFail('id', params.id)
       return access
     } catch (erro) {
       return response.badRequest({ mensage: 'Not found access level' })
@@ -23,7 +23,7 @@ export default class AccessProfilesController {
 
   public async update({ request, params, response }: HttpContextContract) {
     try {
-      let access = await AccessProfile.findByOrFail('secure_id', params.id)
+      let access = await AccessProfile.findByOrFail('id', params.id)
       await access.merge(request.all()).save()
       return access
     } catch (erro) {
@@ -33,7 +33,7 @@ export default class AccessProfilesController {
 
   public async destroy({ params, response }: HttpContextContract) {
     try {
-      let access = await AccessProfile.findByOrFail('secure_id', params.id)
+      let access = await AccessProfile.findByOrFail('id', params.id)
       await access.delete()
     } catch (erro) {
       return response.badRequest({ mensage: 'Not found access level' })

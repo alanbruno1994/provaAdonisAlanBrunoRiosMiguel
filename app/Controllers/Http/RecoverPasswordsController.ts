@@ -1,7 +1,8 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Mail from '@ioc:Adonis/Addons/Mail'
 import User from 'App/Models/User'
 import moment from 'moment'
+import Env from '@ioc:Adonis/Core/Env'
+import EmailTemplate from 'App/Mailers/EmailTemplate'
 const crypto = require('crypto') //Isso aqui vem ja instalado se voce usar o Node aparti da versoa 14 e isso e usado na parte criptografia
 
 export default class RecoverPasswordsController {
@@ -16,17 +17,18 @@ export default class RecoverPasswordsController {
       if (user) {
         await user.save()
       }
-      Mail.send((message) => {
-        message
-          .to(user.email) //aqui para que recebera o e-mail
-          .from('sosvari21@gmail.com', 'Bruno da Luby') //Aqui seria de quem estou enviado o e-mail
-          .subject('Recovering password') //Aqui seria o assunto do e-mail
-          .htmlView('email/recover_password', {
-            emailRecover: email,
-            token: user.token,
-            link: url,
-          })
-      })
+      await new EmailTemplate(
+        user.email,
+        Env.get('fromEmail'),
+        Env.get('nameFrom'),
+        'Recovering password',
+        'email/recover_password',
+        {
+          emailRecover: email,
+          token: user.token,
+          link: url,
+        }
+      ).sendLater()
     } catch (error) {
       //Aqui vai pegar o erro lancado caso o email nao exista
       return response //aqui usamos para responder a tela
@@ -57,7 +59,7 @@ export default class RecoverPasswordsController {
       //Aqui vai pegar o erro lancado caso o email nao exista
       return response //aqui usamos para responder a tela
         .status(error.status) //aqui coloca-se o status que vai ser o 404
-        .send({ erro: 'Token not found' }) // aqui colocamamos a mensagem que sera enviada
+        .send({ erro: error }) // aqui colocamamos a mensagem que sera enviada
     }
   }
 }

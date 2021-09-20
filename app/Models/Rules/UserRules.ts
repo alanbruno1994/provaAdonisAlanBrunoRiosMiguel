@@ -1,5 +1,5 @@
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
-
+//Aqui fica as regras de validação relacionas aos usuários
 export default class UserRules {
   public static email() {
     return schema.string({}, [rules.email(), rules.unique({ table: 'users', column: 'email' })])
@@ -18,21 +18,21 @@ export default class UserRules {
   }
 
   public static name() {
-    return schema.string({}, [rules.required(), rules.minLength(10)])
+    return schema.string({}, [rules.minLength(10)])
   }
 
   public static accessProfileId() {
-    return schema.number([])
+    return schema.number([rules.exists({ table: 'access_profiles', column: 'id' })])
   }
 
   public static chooseRule(choose) {
     switch (choose) {
       case 'email':
         return this.email()
+      case 'name':
+        return this.name()
       case 'password':
         return this.password()
-      case 'color':
-        return this.name()
       case 'accessProfileId':
         return this.accessProfileId()
     }

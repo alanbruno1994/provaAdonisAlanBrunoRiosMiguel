@@ -1,24 +1,15 @@
 import { DateTime } from 'luxon'
-import {
-  BaseModel,
-  column,
-  hasMany,
-  HasMany,
-  BelongsTo,
-  belongsTo,
-  beforeCreate,
-} from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, BelongsTo, belongsTo, afterCreate } from '@ioc:Adonis/Lucid/Orm'
 import { schema } from '@ioc:Adonis/Core/Validator'
 import BetRules from './Rules/BetRules'
 import User from './User'
 import Game from './Game'
-import { v4 as uuidv4 } from 'uuid'
+import EmailTemplate from 'App/Mailers/EmailTemplate'
+import Env from '@ioc:Adonis/Core/Env'
+//Aqui representa a entidade que está ligada a tabela bets
 export default class Bet extends BaseModel {
   @column({ isPrimary: true })
   public id: number
-
-  @column()
-  public secureId: string
 
   @column()
   public userId: number
@@ -60,10 +51,20 @@ export default class Bet extends BaseModel {
   @belongsTo(() => Game)
   public games: BelongsTo<typeof Game>
 
-  //Aqui usamos um hoook, de modo que antes de criar o usuario, ou persirtir ele no banco de dados sera chamado esse metodo o qual
-  //vai criar o id unico para ser armazena no banco de dados
-  @beforeCreate()
-  public static assignUuid(bet: Bet) {
-    bet.secureId = '' + uuidv4() //aqui cria o id unico
+  @afterCreate()
+  public static async createdBet(bet: Bet) {
+    await bet.load('games')
+    await bet.load('users')
+    await new EmailTemplate(
+      bet.$preloaded.users['$attributes'].email,
+      Env.get('fromEmail'),
+      Env.get('nameFrom'),
+      'You made a new bet!',
+      'email/new_bets',
+      {
+        value: bet.$preloaded.games['$attributes'].price,
+        game: bet.$preloaded.games['$attributes'].typeGame,
+      }
+    ).sendLater()
   }
 }

@@ -1,1 +1,67 @@
-<strong>You made a bet in game {{game}} on the value of {{value}}</strong>
+<!DOCTYPE html>
+<html>
+<head> 
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<style>
+  * {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    text-overflow: clip;
+  }
+  html,
+  body {
+    background-color: #e3e3e3;
+  }
+</style>
+<body>
+  <div
+    style="
+      width: 100%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    "
+  >
+    <div style="width: 100%; height: 80px; background-color: #ffa621"></div>
+    <div
+      style="
+        position: absolute;
+        background-color: white;
+        top: 20px;
+        min-width: 240px;
+        width: 90%;
+        max-width: 500px;
+        border-radius: 5px;
+        min-height: 200px;
+      "
+    >
+      <div
+        style="
+          font-size: 21px;
+          font-weight: bold;
+          text-align: center;
+          width: 100%;
+        "
+      >
+        New bet!
+      </div>
+      <div
+        style="
+          width: 100%;
+          color: rgb(143, 143, 143);
+          text-align: left;
+          padding: 10px;
+          box-sizing: border-box;
+          margin-top: 20px;
+        "
+      >
+        You made a bet in game {{game}} on the value of {{value}}
+      </p>
+    </div>
+  </div>
+</body>
+</html>

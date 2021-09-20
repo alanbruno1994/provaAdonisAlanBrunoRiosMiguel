@@ -1,4 +1,5 @@
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
+//Aqui fica as regras de validação ligadas ao jogo
 export default class GamesRules {
   public static typeGame() {
     return schema.string({}, [])
@@ -9,15 +10,15 @@ export default class GamesRules {
   }
 
   public static color() {
-    return schema.string({}, [])
+    return schema.string({}, [rules.minLength(3)])
   }
 
   public static maxNumber() {
-    return schema.number([])
+    return schema.number([rules.unsigned()])
   }
 
   public static range() {
-    return schema.number([])
+    return schema.number([rules.unsigned()])
   }
 
   public static price() {

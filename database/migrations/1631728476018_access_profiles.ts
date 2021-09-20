@@ -6,7 +6,6 @@ export default class AccessProfiles extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
-      table.string('secure_id').unique().notNullable()
       table.string('level', 150).notNullable()
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

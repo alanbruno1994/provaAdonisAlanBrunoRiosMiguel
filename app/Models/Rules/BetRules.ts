@@ -1,4 +1,5 @@
 import { schema } from '@ioc:Adonis/Core/Validator'
+//Aqui fica as regras de validação relacionadas a aposta
 export default class BetRules {
   public static numberChoose() {
     return schema.string({}, [])
