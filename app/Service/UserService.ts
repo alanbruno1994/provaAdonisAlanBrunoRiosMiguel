@@ -5,7 +5,7 @@ export default class UserService {
     if (request.method() === 'PUT') {
       if (request.input('email') === user.email) {
         await request.validate({
-          schema: User.getPatchValidation(request.except(['email', 'password_confirmation', 'id'])),
+          schema: User.getRulesValidationExceptEmail(),
         })
       } else {
         await request.validate({ schema: User.getRulesValidation() })
@@ -13,11 +13,15 @@ export default class UserService {
     } else {
       if (request.input('email') === user.email) {
         await request.validate({
-          schema: User.getPatchValidation(request.except(['email', 'password_confirmation', 'id'])),
+          schema: User.getPatchValidation(
+            request.except(['email', 'secureId', 'password_confirmation', 'id'])
+          ),
         })
       } else {
         await request.validate({
-          schema: User.getPatchValidation(request.except(['password_confirmation', 'id'])),
+          schema: User.getPatchValidation(
+            request.except(['password_confirmation', 'secureId', 'id'])
+          ),
         })
       }
     }

@@ -15,7 +15,7 @@ export default class UserLoginsController {
       const token = await auth
         .use('api')
         .attempt(email, password, { expiresIn: '3days', name: email })
-      return token
+      return { token: token, secureId: auth.user?.secureId }
     } catch {
       return response.badRequest('Invalid credentials')
     }

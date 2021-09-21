@@ -3,15 +3,15 @@ import User from 'App/Models/User'
 import moment from 'moment'
 import Env from '@ioc:Adonis/Core/Env'
 import EmailTemplate from 'App/Mailers/EmailTemplate'
-const crypto = require('crypto') //Isso aqui vem ja instalado se voce usar o Node aparti da versoa 14 e isso e usado na parte criptografia
+const crypto = require('crypto') //Isso aqui vem já instalado se voce usar o Node aparti da versão 14 e isso é usado na parte criptografia
 
 export default class RecoverPasswordsController {
   public async store({ request, response }: HttpContextContract) {
     try {
       await request.validate({ schema: User.getRulesValidationRecoverPassword() })
       const email = request.input('email') //aqui usamos input quando queremos pegar um dos dados vindos da tela
-      const user = await User.findByOrFail('email', email) //Aqui ira busca o usuario que tem o email que foi passado da tela, se nao encontrar sera lancado um erro
-      user.token = Date.now() + crypto.randomBytes(10).toString('hex') //aqui cria um token aletorio de 10 bytes em modo hexadecimal
+      const user = await User.findByOrFail('email', email) //Aqui ira busca o usuario que tem o email que foi passado da tela, se não encontrar sera lancado um erro
+      user.token = Date.now() + crypto.randomBytes(10).toString('hex') //aqui cria um token aleatório de 10 bytes em modo hexadecimal
       user.createAtToken = new Date() //aqui passa a hora em que foi criado o token
       let url = `${request.input('redirect_url')}/fogots?token=${user.token}`
       if (user) {
@@ -30,10 +30,10 @@ export default class RecoverPasswordsController {
         }
       ).sendLater()
     } catch (error) {
-      //Aqui vai pegar o erro lancado caso o email nao exista
+      //Aqui vai pegar o erro lançado caso o email não exista
       return response //aqui usamos para responder a tela
         .status(error.status) //aqui coloca-se o status que vai ser o 404
-        .send({ erro: error.message }) // aqui colocamamos a mensagem que sera enviada
+        .send({ erro: error.message }) // aqui colocamamos a mensagem que será enviada
     }
   }
 
@@ -48,7 +48,7 @@ export default class RecoverPasswordsController {
       //indica que o token expiro, ou seja, foi superior a 2 dias
       if (tokenExpired) {
         return response //aqui usamos para responder a tela
-          .status(401) //aqui indica que nao esta autorizado
+          .status(401) //aqui indica que não esta autorizado
           .send({ erro: 'Token is expired' }) // aqui colocamamos a mensagem que sera enviada
       }
       user.password = password
@@ -56,7 +56,7 @@ export default class RecoverPasswordsController {
       user.createAtToken = null
       await user.save()
     } catch (error) {
-      //Aqui vai pegar o erro lancado caso o email nao exista
+      //Aqui vai pegar o erro lançado caso o email não exista
       return response //aqui usamos para responder a tela
         .status(error.status) //aqui coloca-se o status que vai ser o 404
         .send({ erro: error }) // aqui colocamamos a mensagem que sera enviada

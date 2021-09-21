@@ -1,4 +1,4 @@
-import { schema } from '@ioc:Adonis/Core/Validator'
+import { schema, rules } from '@ioc:Adonis/Core/Validator'
 //Aqui fica as regras de validação relacionadas a aposta
 export default class BetRules {
   public static numberChoose() {
@@ -6,7 +6,7 @@ export default class BetRules {
   }
 
   public static gameId() {
-    return schema.number([])
+    return schema.number([rules.exists({ table: 'games', column: 'id' })])
   }
 
   public static priceGame() {

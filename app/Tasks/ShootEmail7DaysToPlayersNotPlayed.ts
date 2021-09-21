@@ -12,7 +12,7 @@ export default class ShootEmail7DaysToPlayersNotPlayed extends BaseTask {
   Exemplo para disparar as 9:10:00, 0 10 9 * * *  
   */
   public static get schedule() {
-    return '10 25 11 * * *'
+    return '0 52 10 * * *'
   }
   /**
    * Set enable use .lock file for block run retry task

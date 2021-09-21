@@ -22,7 +22,7 @@ export default class TestDataSeeder extends BaseSeeder {
       accessProfileId: 1,
       createdAt: dateCreated,
     })
-    var dateCreated = DateTime.local(2021, 9, 12, 10, 30, 20)
+    var dateCreated = DateTime.local(2021, 9, 14, 10, 30, 20)
     let user3 = await User.create({
       name: 'Alan Bruno3',
       password: '123456',
@@ -30,7 +30,6 @@ export default class TestDataSeeder extends BaseSeeder {
       accessProfileId: 1,
       createdAt: dateCreated,
     })
-    var dateCreated = DateTime.local(2021, 9, 12, 10, 30, 20)
     await User.create({
       name: 'Alan Bruno4',
       password: '123456',
@@ -83,7 +82,7 @@ export default class TestDataSeeder extends BaseSeeder {
       price: 4,
       color: '#fc0303',
     })
-    var dateCreated = DateTime.local(2021, 9, 12, 10, 30, 20)
+
     await Bet.create({
       gameId: game1.id,
       numberChoose: '01,02,03,04,05,06,07,08,09,10,11,12,13,14,15',
@@ -105,6 +104,7 @@ export default class TestDataSeeder extends BaseSeeder {
       userId: user2.id,
       createdAt: dateCreated,
     })
+    var dateCreated = DateTime.local(2021, 9, 5, 10, 30, 20)
     await Bet.create({
       gameId: game1.id,
       numberChoose: '01,02,03,04,05,06,07,08,09,10,11,12,13,14,15',

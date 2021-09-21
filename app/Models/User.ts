@@ -59,6 +59,14 @@ export default class User extends BaseModel {
     })
   }
 
+  public static getRulesValidationExceptEmail() {
+    return schema.create({
+      password: UserRules.password(),
+      name: UserRules.name(),
+      accessProfileId: UserRules.accessProfileId(),
+    })
+  }
+
   public static getRulesValidationLogin() {
     return schema.create({
       email: UserRules.emailLogin(),
@@ -81,13 +89,12 @@ export default class User extends BaseModel {
   public static getPatchValidation(inputs: object) {
     let rules = {}
     for (let value in inputs) {
-      console.log(value, ' teste', rules)
       rules[value] = UserRules.chooseRule(value)
     }
     return schema.create(rules)
   }
 
-  //Aqui colocamos um beforeSave usado para ser chamdo antes de salvar o usuario
+  //Aqui colocamos um beforeSave usado para ser chamdo antes de salvar o usuário
   @beforeSave()
   public static async hashPassword(user: User) {
     if (user.$dirty.password) {
@@ -106,7 +113,6 @@ export default class User extends BaseModel {
       'You have registered to the betting system!',
       'email/new_user'
     ).sendLater()
-    console.log('apos')
   }
 
   @belongsTo(() => AccessProfile)

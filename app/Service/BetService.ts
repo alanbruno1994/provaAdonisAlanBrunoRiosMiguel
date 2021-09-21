@@ -46,10 +46,10 @@ export default class BetService {
   public static async createBet(request, auth) {
     await request.validate({ schema: Bet.getRulesValidation() })
     let bet = request.only(['gameId', 'priceGame', 'numberChoose'])
-    let { gameId, priceGame, numberChoose, games, createdAt, updatedAt } = await Bet.create({
+    let { id, gameId, priceGame, numberChoose, games, createdAt, updatedAt } = await Bet.create({
       ...bet,
       userId: auth.user?.id,
     })
-    return { gameId, priceGame, numberChoose, games, createdAt, updatedAt }
+    return { id, gameId, priceGame, numberChoose, games, createdAt, updatedAt }
   }
 }
