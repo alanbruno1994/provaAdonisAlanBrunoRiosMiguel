@@ -3,12 +3,14 @@ import User from 'App/Models/User'
 import moment from 'moment'
 import Env from '@ioc:Adonis/Core/Env'
 import EmailTemplate from 'App/Mailers/EmailTemplate'
+import RecoverPasswordValidator from 'App/Validators/User/RecoverPasswordValidator'
+import UpdatePasswordValidator from 'App/Validators/User/UpdatePasswordValidator'
 const crypto = require('crypto') //Isso aqui vem já instalado se voce usar o Node aparti da versão 14 e isso é usado na parte criptografia
 
 export default class RecoverPasswordsController {
   public async store({ request, response }: HttpContextContract) {
     try {
-      await request.validate({ schema: User.getRulesValidationRecoverPassword() })
+      await request.validate(RecoverPasswordValidator)
       const email = request.input('email') //aqui usamos input quando queremos pegar um dos dados vindos da tela
       const user = await User.findByOrFail('email', email) //Aqui ira busca o usuario que tem o email que foi passado da tela, se não encontrar sera lancado um erro
       user.token = Date.now() + crypto.randomBytes(10).toString('hex') //aqui cria um token aleatório de 10 bytes em modo hexadecimal
@@ -39,7 +41,7 @@ export default class RecoverPasswordsController {
 
   public async update({ request, response }: HttpContextContract) {
     try {
-      await request.validate({ schema: User.getRulesValidationAlterPassword() })
+      await request.validate(UpdatePasswordValidator)
       const { token, password } = request.all()
       const user = await User.findByOrFail('token', token)
       const tokenExpired = moment() //aqui pega a data atual

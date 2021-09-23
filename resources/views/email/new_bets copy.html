@@ -9,28 +9,36 @@
     padding: 0px;
     box-sizing: border-box;
     text-overflow: clip;
-     
+     border-collapse: collapse
   }
   html,
   body {
     background-color: #e3e3e3;
   }
-    table, th, td {
-  border: 1px solid black;
-  border-collapse: collapse;
-  font-size: 10px;
-  table-layout: fixed;
-  height: 25px; 
-  
+  table, th, td {
+  border: 1px solid rgba(0, 0, 0, 0.224);
+  margin-top: 10px; 
 }
+
+
+
   td
   {
     text-align: center;
-     style=overflow: hidden;
-     text-overflow: clip ellipsis;
+    width: 70%;   
+  }
+  .colorLeft
+  {
+    background-color: #42f542;
+    color: white;
+    font-weight: bolder;    
+    width: 30%;
+  }
+  .colorMarked
+  {
+    background-color: #f1f1f1;
   }
 </style>
-
 <body>
   <div
     style="
@@ -75,34 +83,23 @@
           box-sizing: border-box;
           margin-top: 20px;
         "
-      >
-      @if (bets.length===1)      
-       You bet on the {{bets[0].gameChoose}} game, with the {{bets[0].number_choose}} numbers at a R$ {{bets[0].price_game}} value. 
-      @else
-      <p>Check out the list of your new games:</p>
-           <table style="width: 100%;">
+      > 
+    <h3>Hello Bruno,</h3>
+    You are 7 days without playing.
+    His last games were:
+
+         <table style="width: 100%;">
             <tr>
-              <td style="width: 40%; text-align: center;">Game</td>
-              <td  style="width: 40%; text-align: center;">Number</td>
-              <td  style="width: 20%; text-align: center;">Price</td>
-            </tr>  
-        @each(bet in bets)
-           <tr>
-              <td>{{bet.gameChoose}}</td>
-              <td>{{bet.number_choose}}</td>
-              <td>{{bet.price_game}}</td>
-              
-            </tr>
-        @end
-          <tr>
-              <td></td>
-              <td></td>
-              <td>{{sum}}</td>
-            </tr>
-           </table>  
-
-      @endif
-
+              <td class="colorLeft">Game</td><td >1234543</td>            
+            </tr> 
+            <tr>
+                <td  class="colorLeft">Number</td> <td class="colorMarked" >Loto</td>             
+            <tr>    
+            <tr>
+              <td  class="colorLeft" >Price</td><td>30</td>                
+            </tr>           
+        </table>
+Don't waste time and come check out our games!
          
         
       </p>

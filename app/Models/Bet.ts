@@ -1,15 +1,16 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, BelongsTo, belongsTo, afterCreate } from '@ioc:Adonis/Lucid/Orm'
-import { schema } from '@ioc:Adonis/Core/Validator'
-import BetRules from './Rules/BetRules'
+import { BaseModel, column, BelongsTo, belongsTo, beforeCreate } from '@ioc:Adonis/Lucid/Orm'
 import User from './User'
 import Game from './Game'
-import EmailTemplate from 'App/Mailers/EmailTemplate'
-import Env from '@ioc:Adonis/Core/Env'
+import { v4 as uuidv4 } from 'uuid'
+
 //Aqui representa a entidade que está ligada a tabela bets
 export default class Bet extends BaseModel {
   @column({ isPrimary: true })
   public id: number
+
+  @column()
+  public secureId: uuidv4
 
   @column()
   public userId: number
@@ -29,42 +30,16 @@ export default class Bet extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-  public static getRulesValidation() {
-    return schema.create({
-      numberChoose: BetRules.numberChoose(),
-      gameId: BetRules.gameId(),
-      priceGame: BetRules.priceGame(),
-    })
-  }
-
-  public static getPatchValidation(inputs: object) {
-    let rules = {}
-    for (let value in inputs) {
-      rules[value] = BetRules.chooseRule(value)
-    }
-    return schema.create(rules)
-  }
-
   @belongsTo(() => User)
   public users: BelongsTo<typeof User>
 
   @belongsTo(() => Game)
   public games: BelongsTo<typeof Game>
 
-  @afterCreate()
-  public static async createdBet(bet: Bet) {
-    await bet.load('games')
-    await bet.load('users')
-    await new EmailTemplate(
-      bet.$preloaded.users['$attributes'].email,
-      Env.get('fromEmail'),
-      Env.get('nameFrom'),
-      'You made a new bet!',
-      'email/new_bets',
-      {
-        value: bet.$preloaded.games['$attributes'].price,
-        game: bet.$preloaded.games['$attributes'].typeGame,
-      }
-    ).sendLater()
+  //Aqui usamos um hoook, de modo que antes de criar o usuario, ou persirtir ele no banco de dados sera chamado esse metodo o qual
+  //vai criar o id unico para ser armazena no banco de dados
+  @beforeCreate()
+  public static assignUuid(bet: Bet) {
+    bet.secureId = '' + uuidv4() //aqui cria o id unico
   }
 }

@@ -17,45 +17,18 @@ export default class UsersController {
   }
   //Aqui busca um usuário pelo secure_id
   public async show({ params, response }: HttpContextContract) {
-    try {
-      let user = UserService.findUser(params.id)
-      if (user === null) {
-        throw new Error()
-      }
-      return user
-    } catch (erro) {
-      return response.badRequest({ mensage: 'Not found user' })
-    }
+    return UserService.findUser(params, response)
   }
   //Aqui busca um usuário pelo secure_id e os dados relacionados a estes
   public async showAll({ params, response }: HttpContextContract) {
-    try {
-      let user = UserService.findUserAllData(params.id)
-      if (user === null) {
-        throw new Error()
-      }
-      return user
-    } catch (erro) {
-      return response.badRequest({ mensage: 'Not found user' })
-    }
+    return UserService.findUserAllData(params, response)
   }
   //Aqui atualza um usuário, mas para isso precisa passar o secure_id
   public async update({ request, params, response }: HttpContextContract) {
-    let user = await User.query().where('secure_id', params.id).first()
-    try {
-      if (user === null) throw new Error()
-    } catch (erro) {
-      return response.badRequest({ mensage: 'User Not found' })
-    }
-    return UserService.updateUser(request, response, user)
+    return UserService.updateUser(request, params, response)
   }
   //Aqui apaga um usuário a parti de um secure_id
   public async destroy({ params, response }: HttpContextContract) {
-    try {
-      let user = await User.findByOrFail('secure_id', params.id)
-      await user.delete()
-    } catch (erro) {
-      return response.badRequest({ mensage: erro })
-    }
+    return UserService.deteleUser(params, response)
   }
 }

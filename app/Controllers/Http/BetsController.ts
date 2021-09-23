@@ -1,5 +1,4 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Bet from 'App/Models/Bet'
 import BetService from 'App/Service/BetService'
 
 export default class BetsController {
@@ -21,11 +20,7 @@ export default class BetsController {
   }
   //Aqui busca um jogo
   public async show({ params, response }: HttpContextContract) {
-    try {
-      return await Bet.findByOrFail('id', params.id)
-    } catch (erro) {
-      return response.badRequest({ mensage: 'Not found bet' })
-    }
+    return BetService.find(params, response)
   }
   //Aqui atualiza um jogo
   public async update({ request, params, response }: HttpContextContract) {
@@ -33,11 +28,6 @@ export default class BetsController {
   }
   //Aqui apaga uma aposta através de um id
   public async destroy({ params, response }: HttpContextContract) {
-    try {
-      let bet = await Bet.findByOrFail('id', params.id)
-      await bet.delete()
-    } catch (erro) {
-      return response.badRequest({ mensage: 'Not found bet' })
-    }
+    return BetService.delete(params, response)
   }
 }

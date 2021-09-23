@@ -6,6 +6,7 @@ export default class Bets extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
+      table.uuid('secure_id').unique().notNullable()
       table
         .integer('user_id')
         .unsigned()

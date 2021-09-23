@@ -3,7 +3,13 @@ import Route from '@ioc:Adonis/Core/Route'
     Todas as rotas que só podem ser acesssadas mediantes autenticação
 */
 Route.group(() => {
-  Route.resource('users', 'UsersController').apiOnly().except(['store'])
+  Route.resource('users', 'UsersController')
+    .apiOnly()
+    .except(['store'])
+    .middleware({
+      //Aqui definimos que metodos podem ter a rota protegida por adimin
+      destroy: ['adminAccess'],
+    })
   Route.resource('bets', 'BetsController').apiOnly()
   Route.get('betsAll', 'BetsController.indexAll')
   Route.post('logout', 'UserLogoutsController.store')
@@ -18,5 +24,12 @@ Route.group(() => {
       destroy: ['adminAccess'],
       update: ['adminAccess'],
     })
-  Route.resource('accessProfiles', 'AccessProfilesController').apiOnly()
+  Route.resource('accessProfiles', 'AccessProfilesController')
+    .apiOnly()
+    .middleware({
+      //Aqui definimos que metodos podem ter a rota protegida por adimin
+      store: ['adminAccess'],
+      destroy: ['adminAccess'],
+      update: ['adminAccess'],
+    })
 }).middleware(['auth'])

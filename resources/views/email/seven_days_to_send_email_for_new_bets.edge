@@ -4,15 +4,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 <style>
-  * {
+   * {
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
     text-overflow: clip;
+     border-collapse: collapse
   }
   html,
   body {
     background-color: #e3e3e3;
+  }
+  table, th, td {
+    border: 1px solid rgba(0, 0, 0, 0.224);
+    margin-top: 10px; 
+  }
+  td
+  {
+    text-align: center;
+    width: 70%;   
+  }
+  .colorLeft
+  {
+    background-color: #42f542;
+    color: white;
+    font-weight: bolder;    
+    width: 30%;
+  }
+  .colorMarked
+  {
+    background-color: #f1f1f1;
   }
 </style>
 <body>
@@ -59,7 +80,21 @@
           margin-top: 20px;
         "
       >
-       Your life can change now come check out our games!
+          <h3>Hello {{Bruno}},<h3>
+           You are 7 days without playing.
+          His last games were:
+         <table style="width: 100%;">
+            <tr>
+              <td class="colorLeft">Game</td><td >1234543</td>            
+            </tr> 
+            <tr>
+                <td  class="colorLeft">Number</td> <td class="colorMarked" >Loto</td>             
+            <tr>    
+            <tr>
+              <td  class="colorLeft" >Price</td><td>30</td>                
+            </tr>           
+        </table>
+        Don't waste time and come check out our games!
       </p>
     </div>
   </div>

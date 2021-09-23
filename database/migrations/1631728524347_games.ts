@@ -6,12 +6,14 @@ export default class Games extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
+      table.uuid('secure_id').unique().notNullable()
       table.string('type_game', 120).notNullable()
       table.text('description').notNullable()
       table.integer('range').notNullable()
       table.float('price').notNullable()
       table.integer('max_number').notNullable()
       table.string('color', 120).notNullable()
+
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
