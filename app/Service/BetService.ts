@@ -1,8 +1,9 @@
 import Game from 'App/Models/Game'
 import Bet from 'App/Models/Bet'
-import CreateBetAndPutValidator from 'App/Validators/Bets/CreateBetAndPutValidator'
+import CreateBetValidator from 'App/Validators/Bets/CreateBetValidator'
 import Queue from 'App/lib/Queue'
 import BetPachValidator from 'App/Validators/Bets/BetPachValidator'
+import PutBetValidator from 'App/Validators/Bets/PutBetValidator'
 
 interface BetGame {
   numberChoose: string
@@ -11,9 +12,13 @@ interface BetGame {
 export default class BetService {
   public static async updateBet(request, params, response) {
     if (request.method() === 'PUT') {
-      await request.validate(CreateBetAndPutValidator)
+      await request.validate(PutBetValidator)
     } else {
-      await request.validate(BetPachValidator)
+      await request.validate({
+        schema: new BetPachValidator().getPatchValidation(
+          request.except(['secureId', 'id', 'priceGame'])
+        ),
+      })
     }
     try {
       let bet = await Bet.findByOrFail('secure_id', params.id)
@@ -50,32 +55,41 @@ export default class BetService {
   }
 
   public static async createBet(request, auth) {
-    await request.validate(CreateBetAndPutValidator)
+    await request.validate(CreateBetValidator)
     let bets: BetGame[] = request.input('bets')
-    await this.forBets(bets, auth)
-    return await Bet.query().where('user_id', auth.user.id)
+    return await this.forBets(bets, auth)
   }
 
   private static async forBets(bets, auth) {
-    let betsEmail: any = []
-    let sum = 0
-    await bets.forEach(async (value: BetGame, id, array) => {
-      let game = await Game.findBy('id', value.gameId)
-      let gameCreated = await Bet.create({
-        userId: auth.user?.id,
-        priceGame: game?.price,
-        numberChoose: value.numberChoose,
-        gameId: game?.id,
-      })
-      let { numberChoose, priceGame } = gameCreated
-      sum += priceGame
-      betsEmail.push({
-        gameChoose: game?.typeGame,
-        number_choose: numberChoose,
-        price_game: priceGame,
-      })
-      if (id + 1 === array.length) {
-        this.sendMailBetCreated(betsEmail, auth.user.email, sum)
+    return new Promise((resolve, reject) => {
+      try {
+        let betsEmail: any = []
+        let sum = 0
+        bets.forEach(async (value: BetGame, id, array) => {
+          let game = await Game.findBy('id', value.gameId)
+          let gameCreated = await Bet.create({
+            userId: auth.user?.id,
+            priceGame: game?.price,
+            numberChoose: value.numberChoose,
+            gameId: game?.id,
+          })
+          let { numberChoose, priceGame, createdAt, updatedAt, secureId } = gameCreated
+          sum += priceGame
+          betsEmail.push({
+            gameChoose: game?.typeGame,
+            number_choose: numberChoose,
+            price_game: priceGame,
+            secureId,
+            createdAt,
+            updatedAt,
+          })
+          if (id + 1 === array.length) {
+            this.sendMailBetCreated(betsEmail, auth.user.email, sum)
+            resolve(betsEmail)
+          }
+        })
+      } catch (e) {
+        reject(e)
       }
     })
   }

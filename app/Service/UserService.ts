@@ -1,11 +1,10 @@
 import User from 'App/Models/User'
 import CreateUserPutValidator from 'App/Validators/User/CreateUserPutValidator'
-import PatchIgnoreEmailUserValidator from 'App/Validators/User/PatchIgnoreEmailUserValidator'
 import PatchUserValidator from 'App/Validators/User/PatchUserValidator'
 import PutIgnoreEmailUserValidator from 'App/Validators/User/PutIgnoreEmailUserValidator'
 
 export default class UserService {
-  public static async updateUser(request, response, params) {
+  public static async updateUser(request, params, response) {
     let user = await User.query().where('secure_id', params.id).first()
     try {
       if (user === null) throw new Error()
@@ -21,9 +20,17 @@ export default class UserService {
       }
     } else {
       if (request.input('email') === user.email) {
-        await request.validate(PatchIgnoreEmailUserValidator)
+        await request.validate({
+          schema: new PatchUserValidator().getPatchValidation(
+            request.except(['secureId', 'password_confirmation', 'email', 'id'])
+          ),
+        })
       } else {
-        await request.validate(PatchUserValidator)
+        await request.validate({
+          schema: new PatchUserValidator().getPatchValidation(
+            request.except(['secureId', 'password_confirmation', 'id'])
+          ),
+        })
       }
     }
     try {

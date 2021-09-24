@@ -1,7 +1,7 @@
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class PatchIgnoreEmailUserValidator {
+export default class PutBetValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   /*
@@ -21,18 +21,11 @@ export default class PatchIgnoreEmailUserValidator {
    *       rules.email(),
    *       rules.unique({ table: 'users', column: 'email' }),
    *     ])
-   *    ```
+   *    ``` bets:schema.array().members(schema.object{numberChoose:schema.string()}))
    */
   public schema = schema.create({
-    password: schema.string.optional({}, [
-      rules.confirmed(),
-      rules.minLength(6),
-      rules.maxLength(15),
-    ]),
-    name: schema.string.optional({}, [rules.minLength(10)]),
-    accessProfileId: schema.number.optional([
-      rules.exists({ table: 'access_profiles', column: 'id' }),
-    ]),
+    numberChoose: schema.string({}, []),
+    gameId: schema.number([rules.exists({ table: 'games', column: 'id' })]),
   })
 
   /**

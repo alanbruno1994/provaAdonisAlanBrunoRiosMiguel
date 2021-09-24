@@ -7,7 +7,9 @@ export default class GameService {
     if (request.method() === 'PUT') {
       await request.validate(GameCreateAndPutValidator)
     } else {
-      await request.validate(PatchGameValidator)
+      await request.validate({
+        schema: new PatchGameValidator().getPatchValidation(request.except(['id', 'secureId'])),
+      })
     }
     try {
       let game = await Game.findByOrFail('secure_id', params.id)

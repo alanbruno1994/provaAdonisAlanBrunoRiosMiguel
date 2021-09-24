@@ -74,14 +74,14 @@ RecoverPassword.process(async (job, done) => {
 })
 
 SevenGame.process(async (job, done) => {
-  let { email, template, subject } = job.data
+  let { email, template, subject, nameUser, data, sum } = job.data
   console.log('quee email ', job.data)
   await Mail.send((message) => {
     message
       .from(Env.get('fromEmail'), Env.get('nameFrom'))
       .to(email)
       .subject(subject)
-      .htmlView(template)
+      .htmlView(template, { nameUser, data, sum })
   })
   done()
 })

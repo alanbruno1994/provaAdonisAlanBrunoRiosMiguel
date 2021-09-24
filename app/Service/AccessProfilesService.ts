@@ -37,7 +37,8 @@ export default class AccessProfileService {
       let access = await AccessProfile.findByOrFail('secure_id', params.id)
       await access.delete()
     } catch (erro) {
-      return response.badRequest({ mensage: 'Not found access level' })
+      if (erro.code === 'ER_ROW_IS_REFERENCED_2') throw erro
+      return response.badRequest({ mensage: erro })
     }
   }
 }

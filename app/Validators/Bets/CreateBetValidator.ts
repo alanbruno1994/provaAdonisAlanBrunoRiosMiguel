@@ -26,8 +26,8 @@ export default class CreateBetAndPutValidator {
   public schema = schema.create({
     bets: schema.array().members(
       schema.object().members({
-        numberChoose: schema.string({}, []),
         gameId: schema.number([rules.exists({ table: 'games', column: 'id' })]),
+        numberChoose: schema.string({}, []),
       })
     ),
   })

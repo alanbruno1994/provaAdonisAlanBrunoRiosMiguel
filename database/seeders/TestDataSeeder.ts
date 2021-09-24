@@ -22,7 +22,7 @@ export default class TestDataSeeder extends BaseSeeder {
       accessProfileId: 1,
       createdAt: dateCreated,
     })
-    var dateCreated = DateTime.local(2021, 9, 16, 10, 30, 20)
+    var dateCreated = DateTime.local(2021, 9, 17, 8, 30, 20)
     let user3 = await User.create({
       name: 'Alan Bruno3',
       password: '123456',

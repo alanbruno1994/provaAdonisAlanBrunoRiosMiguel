@@ -9,7 +9,9 @@
     padding: 0px;
     box-sizing: border-box;
     text-overflow: clip;
-     border-collapse: collapse
+     border-collapse: collapse;
+      color: rgb(165, 165, 165);
+     font-size: 14px;
   }
   html,
   body {
@@ -21,8 +23,8 @@
   }
   td
   {
-    text-align: center;
-    width: 70%;   
+    text-align: center;    
+    word-break: break-all;
   }
   .colorLeft
   {
@@ -34,6 +36,16 @@
   .colorMarked
   {
     background-color: #f1f1f1;
+    width: 70%; 
+  }
+ h3
+  {
+    color: black;  
+    font-size: 18px;
+  }
+  p{
+     
+    font-size: 14px;
   }
 </style>
 <body>
@@ -80,22 +92,29 @@
           margin-top: 20px;
         "
       >
-          <h3>Hello {{Bruno}},<h3>
-           You are 7 days without playing.
-          His last games were:
+          <h3>Hello {{nameUser}},<h3>
+           <p style="margin-top:10px">You are 7 days without playing.</p>
+         @if(data.length>0)
+         <p style="margin:10px 0px"> His last games were:<p>
          <table style="width: 100%;">
+            @each(value in data)
             <tr>
-              <td class="colorLeft">Game</td><td >1234543</td>            
+              <td class="colorLeft">Game</td><td class="colorMarked">{{value.type}}</td>            
             </tr> 
             <tr>
-                <td  class="colorLeft">Number</td> <td class="colorMarked" >Loto</td>             
+                <td  class="colorLeft">Number</td> <td>{{value.number}}</td>             
             <tr>    
             <tr>
-              <td  class="colorLeft" >Price</td><td>30</td>                
-            </tr>           
-        </table>
-        Don't waste time and come check out our games!
-      </p>
+              <td  class="colorLeft" >Price</td><td>{{value.price}}</td>                
+            </tr>          
+            @end  
+            <tr style="background-color: #f1f1f1">
+              <td style="text-align:rigth">Price Total</td>              
+              <td>{{sum}}</td>
+            </tr>                   
+          </table>
+          @endif
+       <p> Don't waste time and come check out our games! </p>
     </div>
   </div>
 </body>

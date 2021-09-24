@@ -1,54 +1,41 @@
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
-import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class PatchUserValidator {
-  constructor(protected ctx: HttpContextContract) {}
+  constructor() {}
+  public email() {
+    return schema.string({}, [rules.email(), rules.unique({ table: 'users', column: 'email' })])
+  }
 
-  /*
-   * Define schema to validate the "shape", "type", "formatting" and "integrity" of data.
-   *
-   * For example:
-   * 1. The username must be of data type string. But then also, it should
-   *    not contain special characters or numbers.
-   *    ```
-   *     schema.string({}, [ rules.alpha() ])
-   *    ```
-   *
-   * 2. The email must be of data type string, formatted as a valid
-   *    email. But also, not used by any other user.
-   *    ```
-   *     schema.string({}, [
-   *       rules.email(),
-   *       rules.unique({ table: 'users', column: 'email' }),
-   *     ])
-   *    ```
-   */
-  public schema = schema.create({
-    email: schema.string.optional({}, [
-      rules.email(),
-      rules.unique({ table: 'users', column: 'email' }),
-    ]),
-    password: schema.string.optional({}, [
-      rules.confirmed(),
-      rules.minLength(6),
-      rules.maxLength(15),
-    ]),
-    name: schema.string.optional({}, [rules.minLength(10)]),
-    accessProfileId: schema.number.optional([
-      rules.exists({ table: 'access_profiles', column: 'id' }),
-    ]),
-  })
+  public password() {
+    return schema.string({}, [rules.confirmed(), rules.minLength(6), rules.maxLength(15)])
+  }
 
-  /**
-   * Custom messages for validation failures. You can make use of dot notation `(.)`
-   * for targeting nested fields and array expressions `(*)` for targeting all
-   * children of an array. For example:
-   *
-   * {
-   *   'profile.username.required': 'Username is required',
-   *   'scores.*.number': 'Define scores as valid numbers'
-   * }
-   *
-   */
-  public messages = {}
+  public name() {
+    return schema.string({}, [rules.minLength(10)])
+  }
+
+  public accessProfileId() {
+    return schema.number([rules.exists({ table: 'access_profiles', column: 'id' })])
+  }
+
+  public chooseRule(choose) {
+    switch (choose) {
+      case 'email':
+        return this.email()
+      case 'name':
+        return this.name()
+      case 'password':
+        return this.password()
+      case 'accessProfileId':
+        return this.accessProfileId()
+    }
+  }
+
+  public getPatchValidation(inputs: object) {
+    let rules = {}
+    for (let value in inputs) {
+      rules[value] = this.chooseRule(value)
+    }
+    return schema.create(rules)
+  }
 }

@@ -4,30 +4,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 <style>
-  * {
+    * {
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
     text-overflow: clip;
-     
+     border-collapse: collapse;
+     color: rgb(165, 165, 165);
+     font-size: 14px;
   }
   html,
   body {
     background-color: #e3e3e3;
   }
-    table, th, td {
-  border: 1px solid black;
-  border-collapse: collapse;
-  font-size: 10px;
-  table-layout: fixed;
-  height: 25px; 
-  
-}
+  table, th, td {
+    border: 1px solid rgba(0, 0, 0, 0.224);
+    margin-top: 10px; 
+  }
   td
   {
     text-align: center;
-     style=overflow: hidden;
-     text-overflow: clip ellipsis;
+      
+    word-break: break-all;
+  }
+  .colorLeft
+  {
+    background-color: #42f542;
+    color: white;
+    font-weight: bolder;    
+    width: 30%;
+  }
+  .colorMarked
+  {
+    background-color: #f1f1f1;
+     width: 70%;
+  }
+  h3
+  {
+    font-weight: bolder
   }
 </style>
 
@@ -80,23 +94,20 @@
        You bet on the {{bets[0].gameChoose}} game, with the {{bets[0].number_choose}} numbers at a R$ {{bets[0].price_game}} value. 
       @else
       <p>Check out the list of your new games:</p>
-           <table style="width: 100%;">
-            <tr>
-              <td style="width: 40%; text-align: center;">Game</td>
-              <td  style="width: 40%; text-align: center;">Number</td>
-              <td  style="width: 20%; text-align: center;">Price</td>
-            </tr>  
+           <table style="width: 100%;">          
         @each(bet in bets)
-           <tr>
-              <td>{{bet.gameChoose}}</td>
-              <td>{{bet.number_choose}}</td>
-              <td>{{bet.price_game}}</td>
-              
-            </tr>
+        <tr>
+              <td class="colorLeft">Game</td><td class="colorMarked">{{bet.gameChoose}}</td>            
+            </tr> 
+            <tr>
+                <td  class="colorLeft">Number</td> <td>{{bet.number_choose}}</td>             
+            <tr>    
+            <tr>
+              <td  class="colorLeft" >Price</td><td>{{bet.price_game}}</td>                
+            </tr>         
         @end
-          <tr>
-              <td></td>
-              <td></td>
+          <tr style="background-color: #f1f1f1">
+              <td style="text-align:rigth">Price Total</td>              
               <td>{{sum}}</td>
             </tr>
            </table>  

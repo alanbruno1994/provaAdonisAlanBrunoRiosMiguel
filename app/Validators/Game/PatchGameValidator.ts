@@ -2,46 +2,54 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class PatchGameValidator {
-  constructor(protected ctx: HttpContextContract) {}
+  constructor() {}
 
-  /*
-   * Define schema to validate the "shape", "type", "formatting" and "integrity" of data.
-   *
-   * For example:
-   * 1. The username must be of data type string. But then also, it should
-   *    not contain special characters or numbers.
-   *    ```
-   *     schema.string({}, [ rules.alpha() ])
-   *    ```
-   *
-   * 2. The email must be of data type string, formatted as a valid
-   *    email. But also, not used by any other user.
-   *    ```
-   *     schema.string({}, [
-   *       rules.email(),
-   *       rules.unique({ table: 'users', column: 'email' }),
-   *     ])
-   *    ```
-   */
-  public schema = schema.create({
-    typeGame: schema.string.optional({}, [rules.minLength(3)]),
-    description: schema.string.optional({}, []),
-    color: schema.string.optional({}, [rules.minLength(3)]),
-    maxNumber: schema.number.optional([rules.unsigned()]),
-    range: schema.number.optional([rules.unsigned()]),
-    price: schema.number.optional([]),
-  })
+  public typeGame() {
+    return schema.string({}, [])
+  }
 
-  /**
-   * Custom messages for validation failures. You can make use of dot notation `(.)`
-   * for targeting nested fields and array expressions `(*)` for targeting all
-   * children of an array. For example:
-   *
-   * {
-   *   'profile.username.required': 'Username is required',
-   *   'scores.*.number': 'Define scores as valid numbers'
-   * }
-   *
-   */
-  public messages = {}
+  public description() {
+    return schema.string({}, [])
+  }
+
+  public color() {
+    return schema.string({}, [rules.minLength(3)])
+  }
+
+  public maxNumber() {
+    return schema.number([rules.unsigned()])
+  }
+
+  public range() {
+    return schema.number([rules.unsigned()])
+  }
+
+  public price() {
+    return schema.number([])
+  }
+
+  public chooseRule(choose) {
+    switch (choose) {
+      case 'typeGame':
+        return this.typeGame()
+      case 'description':
+        return this.description()
+      case 'color':
+        return this.color()
+      case 'maxNumber':
+        return this.maxNumber()
+      case 'range':
+        return this.range()
+      case 'price':
+        return this.price()
+    }
+  }
+
+  public getPatchValidation(inputs: object) {
+    let rules = {}
+    for (let value in inputs) {
+      rules[value] = this.chooseRule(value)
+    }
+    return schema.create(rules)
+  }
 }

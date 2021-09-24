@@ -36,6 +36,8 @@ export default class ExceptionHandler extends HttpExceptionHandler {
       return ctx.response.status(500).send("You may have passed a parameter that doesn't exist!")
     } else if (error.code === 'E_ROUTE_NOT_FOUND') {
       return ctx.response.status(400).send('The route does not exist!')
+    } else if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+      return ctx.response.status(500).send('Operation not allowed!')
     }
     /**
      * Forward rest of the exceptions to the parent class

@@ -24,7 +24,6 @@ export default class UpdatePasswordValidator {
    *    ```
    */
   public schema = schema.create({
-    email: schema.string({}, [rules.email(), rules.unique({ table: 'users', column: 'email' })]),
     password: schema.string({}, [rules.confirmed(), rules.minLength(6), rules.maxLength(15)]),
   })
 
