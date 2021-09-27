@@ -11,8 +11,8 @@ export default class BetsController {
     return BetService.findAllandDataAll()
   }
   //Aqui faz um registro de aposta
-  public async store({ request, auth }: HttpContextContract) {
-    return BetService.createBet(request, auth)
+  public async store({ request, auth, response }: HttpContextContract) {
+    return BetService.createBet(request, auth, response)
   }
   //Aqui busca um jogo e os dados associados
   public async showAll({ params, response }: HttpContextContract) {

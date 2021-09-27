@@ -1,8 +1,10 @@
 import { DateTime } from 'luxon'
 import { BaseModel, beforeCreate, column } from '@ioc:Adonis/Lucid/Orm'
 import { v4 as uuidv4 } from 'uuid'
+import CamelCaseNamingStrategy from 'App/lib/CamelCaseNamingStrategy'
 //Aqui representa a entidade que está ligada a tabela games
 export default class Game extends BaseModel {
+  public static namingStrategy = new CamelCaseNamingStrategy()
   @column({ isPrimary: true })
   public id: number
 

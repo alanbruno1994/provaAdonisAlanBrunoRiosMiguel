@@ -14,6 +14,7 @@ export default class Bets extends BaseSchema {
         .inTable('users')
         .notNullable()
         .onDelete('CASCADE')
+        .notNullable()
       table
         .integer('game_id')
         .unsigned()
@@ -21,6 +22,7 @@ export default class Bets extends BaseSchema {
         .inTable('games')
         .notNullable()
         .onDelete('CASCADE')
+        .notNullable()
       table.string('number_choose').notNullable()
       table.float('price_game').notNullable()
 

@@ -3,9 +3,11 @@ import { BaseModel, column, BelongsTo, belongsTo, beforeCreate } from '@ioc:Adon
 import User from './User'
 import Game from './Game'
 import { v4 as uuidv4 } from 'uuid'
+import CamelCaseNamingStrategy from 'App/lib/CamelCaseNamingStrategy'
 
 //Aqui representa a entidade que está ligada a tabela bets
 export default class Bet extends BaseModel {
+  public static namingStrategy = new CamelCaseNamingStrategy()
   @column({ isPrimary: true })
   public id: number
 

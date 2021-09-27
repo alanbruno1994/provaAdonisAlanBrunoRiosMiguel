@@ -10,7 +10,12 @@ export default class Users extends BaseSchema {
       table.string('name').notNullable()
       table.string('email').unique().notNullable()
       table.string('password').notNullable()
-      table.integer('access_profile_id').unsigned().references('id').inTable('access_profiles')
+      table
+        .integer('access_profile_id')
+        .unsigned()
+        .references('id')
+        .inTable('access_profiles')
+        .notNullable()
       table.string('token')
       table.timestamp('create_at_token', { useTz: true }).nullable()
       /**

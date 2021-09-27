@@ -1,3 +1,4 @@
+import Database from '@ioc:Adonis/Lucid/Database'
 import Game from 'App/Models/Game'
 import Bet from 'App/Models/Bet'
 import CreateBetValidator from 'App/Validators/Bets/CreateBetValidator'
@@ -22,10 +23,12 @@ export default class BetService {
     }
     try {
       let bet = await Bet.findByOrFail('secure_id', params.id)
-      let alteredBet = await bet.merge(request.except(['secureId', 'id'])).save()
+      let alteredBet = await bet.merge(request.except(['secureId', 'id']))
+      alteredBet.priceGame = await (await Game.findByOrFail('id', alteredBet.gameId)).price
+      await alteredBet.save()
       return alteredBet
     } catch (erro) {
-      return response.badRequest({ mensage: 'Not found bet' })
+      return response.status(404).send({ mensage: 'Not found bet' })
     }
   }
 
@@ -54,43 +57,47 @@ export default class BetService {
     return await Bet.all()
   }
 
-  public static async createBet(request, auth) {
+  public static async createBet(request, auth, response) {
     await request.validate(CreateBetValidator)
     let bets: BetGame[] = request.input('bets')
-    return await this.forBets(bets, auth)
+    let operation: any = await this.forBets(bets, auth)
+    if (operation.sucess === false) {
+      return response.status(500).send('One of the bets has the wrong number')
+    }
+    this.sendMailBetCreated(operation.betsEmail, auth.user.email, operation.sum)
+    return operation.betsEmail
   }
 
   private static async forBets(bets, auth) {
-    return new Promise((resolve, reject) => {
-      try {
-        let betsEmail: any = []
-        let sum = 0
-        bets.forEach(async (value: BetGame, id, array) => {
-          let game = await Game.findBy('id', value.gameId)
-          let gameCreated = await Bet.create({
-            userId: auth.user?.id,
-            priceGame: game?.price,
-            numberChoose: value.numberChoose,
-            gameId: game?.id,
-          })
-          let { numberChoose, priceGame, createdAt, updatedAt, secureId } = gameCreated
-          sum += priceGame
-          betsEmail.push({
-            gameChoose: game?.typeGame,
-            number_choose: numberChoose,
-            price_game: priceGame,
-            secureId,
-            createdAt,
-            updatedAt,
-          })
-          if (id + 1 === array.length) {
-            this.sendMailBetCreated(betsEmail, auth.user.email, sum)
-            resolve(betsEmail)
+    let betsEmail: any = []
+    let sucess = true
+    let sum = 0
+    return new Promise(async (resolve, reject) => {
+      await Database.transaction(async (trx) => {
+        for (let i = 0; i < bets.length; i++) {
+          let game = await Game.findByOrFail('id', +bets[i].gameId)
+          let gameCreated = new Bet()
+          sum += game.price
+          gameCreated.userId = auth.user?.id
+          gameCreated.priceGame = game.price
+          gameCreated.numberChoose = bets[i].numberChoose
+          gameCreated.gameId = game.id
+          gameCreated.useTransaction(trx)
+          await gameCreated.save()
+          if ((bets[i].numberChoose + '').match(/\d+/g)?.length !== game.range) {
+            sucess = false
+            break
           }
-        })
-      } catch (e) {
-        reject(e)
-      }
+          betsEmail.push(gameCreated)
+        }
+        if (sucess === false) {
+          await trx.rollback()
+        } else {
+          await trx.commit()
+        }
+      })
+
+      resolve({ sucess, betsEmail, sum })
     })
   }
 
@@ -108,7 +115,7 @@ export default class BetService {
     try {
       return await Bet.findByOrFail('secure_id', params.id)
     } catch (erro) {
-      return response.badRequest({ mensage: 'Not found bet' })
+      return response.status(404).send({ mensage: 'Not found bet' })
     }
   }
 
@@ -117,7 +124,7 @@ export default class BetService {
       let bet = await Bet.findByOrFail('secure_id', params.id)
       await bet.delete()
     } catch (erro) {
-      return response.badRequest({ mensage: 'Not found bet' })
+      return response.status(404).send({ mensage: 'Not found bet' })
     }
   }
 }

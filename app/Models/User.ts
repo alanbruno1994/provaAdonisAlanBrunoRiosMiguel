@@ -15,9 +15,11 @@ import AccessProfile from './AccessProfile'
 import Bet from './Bet'
 import { v4 as uuidv4 } from 'uuid'
 import Queue from '../lib/Queue'
+import CamelCaseNamingStrategy from '../lib/CamelCaseNamingStrategy'
 
 //Aqui representa a entidade que está ligada a tabela users
 export default class User extends BaseModel {
+  public static namingStrategy = new CamelCaseNamingStrategy()
   @column({ isPrimary: true })
   public id: number
 
@@ -59,7 +61,6 @@ export default class User extends BaseModel {
   @afterCreate()
   public static async protectedPassword(user: User) {
     user.password = ''
-    console.log('send to email for user created')
     Queue.RegisterUser.add({
       email: user.email,
       subject: 'You have registered to the betting system!',

@@ -36,53 +36,57 @@ const SevenGame = new Bull('SevenGame', {
 
 RegisterUser.process(async (job, done) => {
   let { email, template, subject } = job.data
-  console.log('quee user ', job.data)
-  await Mail.send((message) => {
-    message
-      .from(Env.get('fromEmail'), Env.get('nameFrom'))
-      .to(email)
-      .subject(subject)
-      .htmlView(template)
-  })
+  try {
+    await Mail.send((message) => {
+      message
+        .from(Env.get('fromEmail'), Env.get('nameFrom'))
+        .to(email)
+        .subject(subject)
+        .htmlView(template)
+    })
+  } catch (e) {}
   done()
 })
 
 RegisterBet.process(async (job, done) => {
   let { email, template, subject, bets, sum } = job.data
-  console.log('quee email ', email, template, subject, bets)
-  await Mail.send((message) => {
-    message
-      .from(Env.get('fromEmail'), Env.get('nameFrom'))
-      .to(email)
-      .subject(subject)
-      .htmlView(template, { bets, sum })
-  })
+  try {
+    await Mail.send((message) => {
+      message
+        .from(Env.get('fromEmail'), Env.get('nameFrom'))
+        .to(email)
+        .subject(subject)
+        .htmlView(template, { bets, sum })
+    })
+  } catch (e) {}
   done()
 })
 
 RecoverPassword.process(async (job, done) => {
   let { email, template, subject } = job.data
-  console.log('quee recover ', job.data)
-  await Mail.send((message) => {
-    message
-      .from(Env.get('fromEmail'), Env.get('nameFrom'))
-      .to(email)
-      .subject(subject)
-      .htmlView(template)
-  })
+  try {
+    await Mail.send((message) => {
+      message
+        .from(Env.get('fromEmail'), Env.get('nameFrom'))
+        .to(email)
+        .subject(subject)
+        .htmlView(template)
+    })
+  } catch (e) {}
   done()
 })
 
 SevenGame.process(async (job, done) => {
   let { email, template, subject, nameUser, data, sum } = job.data
-  console.log('quee email ', job.data)
-  await Mail.send((message) => {
-    message
-      .from(Env.get('fromEmail'), Env.get('nameFrom'))
-      .to(email)
-      .subject(subject)
-      .htmlView(template, { nameUser, data, sum })
-  })
+  try {
+    await Mail.send((message) => {
+      message
+        .from(Env.get('fromEmail'), Env.get('nameFrom'))
+        .to(email)
+        .subject(subject)
+        .htmlView(template, { nameUser, data, sum })
+    })
+  } catch (e) {}
   done()
 })
 

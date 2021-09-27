@@ -16,8 +16,9 @@ export default class UserLoginsController {
         .use('api')
         .attempt(email, password, { expiresIn: '3days', name: email })
       return { token: token, secureId: auth.user?.secureId }
-    } catch {
-      return response.badRequest('Invalid credentials')
+    } catch (e) {
+      console.log(e)
+      return response.badRequest(e /*'Invalid credentials'*/)
     }
   }
 }

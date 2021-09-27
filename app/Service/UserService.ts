@@ -41,7 +41,7 @@ export default class UserService {
       let { email, createdAt, name, updatedAt, accessProfileId, id, secureId } = userAltered
       return { email, createdAt, name, updatedAt, accessProfileId, id, secureId }
     } catch (erro) {
-      return response.badRequest({ mensage: erro })
+      return response.status(404).send({ mensage: 'Not found user' })
     }
   }
 
@@ -58,7 +58,7 @@ export default class UserService {
       }
       return user
     } catch (erro) {
-      return response.badRequest({ mensage: 'Not found user' })
+      return response.status(404).send({ mensage: 'Not found user' })
     }
   }
 
@@ -73,7 +73,7 @@ export default class UserService {
       }
       return user
     } catch (erro) {
-      return response.badRequest({ mensage: 'Not found user' })
+      return response.status(404).send({ mensage: 'Not found user' })
     }
   }
 
@@ -108,7 +108,7 @@ export default class UserService {
       let user = await User.findByOrFail('secure_id', params.id)
       await user.delete()
     } catch (erro) {
-      return response.badRequest({ mensage: erro })
+      return response.status(404).send({ mensage: 'Not found user' })
     }
   }
 }
