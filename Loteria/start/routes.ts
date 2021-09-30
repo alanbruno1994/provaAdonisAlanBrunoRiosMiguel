@@ -23,5 +23,5 @@ import './routes/ReleasedRoutes'
 import './routes/RoutesProtection'
 
 Route.get('/oi', async () => {
-  return { hello: 'world' }
+  return { hello: 'world2' }
 })

@@ -6,7 +6,7 @@ WORKDIR /home/node/app
 
 COPY package.json yarn.* ./
 
-#RUN apk add --no-cache git
+RUN apk add --no-cache git
 
 COPY . /home/node/app/
 
