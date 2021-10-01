@@ -1,34 +1,38 @@
 const express = require("express");
 //import routes from "./Routes";
 const app = express();
-
+import ShootGamesAdmins from "./Queue";
 const { Kafka } = require("kafkajs");
 
 const kafka = new Kafka({
   clientId: "ms_emails",
-  brokers: ["kafka:9092"], //kafka e o nome do broker que esta no docker-compose.yml
+  brokers: ["kafka:29092"], //kafka e o nome do broker que esta no docker-compose.yml
 });
 
-const producer = kafka.producer();
 const consumer = kafka.consumer({ groupId: "ms_emails_group" });
 async function run() {
   try {
-    await producer.connect();
     await consumer.connect();
 
-    /*await consumer.subscribe({ topic: "bets" });
+    await consumer.subscribe({ topic: "bets" });
 
     await consumer.run({
-      eachMessage: async ({ topic, partition, message }) => {
-        console.log("Resposta", String(message.value));
+      eachMessage: async ({ topic, partition, message }: any) => {
+        let objeto = JSON.parse(String(message.value));
+        ShootGamesAdmins.add({
+          user: "",
+          bets: "",
+        });
+        console.log("Resposta", objeto);
       },
-    });*/
+    });
   } catch (error) {}
 
-  app.listen(8080);
+  app.listen(9090);
 }
 
-app.get("/", (req, resp) => {
+app.get("/", (req: any, resp: any) => {
+  console.log("conect", consumer);
   return resp.json({ ok: true });
 });
 

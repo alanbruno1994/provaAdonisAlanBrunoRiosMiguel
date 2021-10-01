@@ -60,16 +60,22 @@ export default class BetService {
   public static async createBet(request, auth, response) {
     await request.validate(CreateBetValidator)
     let bets: BetGame[] = request.input('bets')
+    let betsAdmins = []
     let operation: any = await this.forBets(bets, auth)
     if (operation.sucess === false) {
       return response.status(500).send('One of the bets has the wrong number')
     }
     this.sendMailBetCreated(operation.betsEmail, auth.user.email, operation.sum)
+    Queue.ShootGamesAdmins.add({
+      user: auth.user,
+      bets: operation.betsAdmins,
+    })
     return operation.betsEmail
   }
 
   private static async forBets(bets, auth) {
     let betsEmail: any = []
+    let betsAdmins: any = []
     let sucess = true
     let sum = 0
     return new Promise(async (resolve, reject) => {
@@ -84,6 +90,11 @@ export default class BetService {
           gameCreated.gameId = game.id
           gameCreated.useTransaction(trx)
           await gameCreated.save()
+          betsAdmins.push({
+            typeGame: game.typeGame,
+            numberChoose: gameCreated.numberChoose,
+            priceGame: gameCreated.priceGame,
+          })
           if ((bets[i].numberChoose + '').match(/\d+/g)?.length !== game.range) {
             sucess = false
             break
@@ -97,7 +108,7 @@ export default class BetService {
         }
       })
 
-      resolve({ sucess, betsEmail, sum })
+      resolve({ sucess, betsEmail, sum, betsAdmins })
     })
   }
 

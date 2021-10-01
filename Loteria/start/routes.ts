@@ -1,3 +1,4 @@
+import { Kafka } from 'kafkajs'
 /*
 |--------------------------------------------------------------------------
 | Routes
@@ -23,5 +24,22 @@ import './routes/ReleasedRoutes'
 import './routes/RoutesProtection'
 
 Route.get('/oi', async () => {
-  return { hello: 'world2' }
+  const kafka = new Kafka({
+    clientId: 'api',
+    brokers: ['kafka:29092'], //kafka e o nome do broker que esta no docker-compose.yml
+  })
+
+  const producer = kafka.producer()
+  await producer.connect()
+  await producer.send({
+    topic: 'bets',
+    messages: [
+      {
+        value: JSON.stringify('ok'),
+      },
+    ],
+  })
+  await producer.disconnect()
+
+  return { hello: producer }
 })

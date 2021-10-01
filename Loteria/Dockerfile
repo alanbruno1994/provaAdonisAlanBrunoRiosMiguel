@@ -10,7 +10,7 @@ RUN apk add --no-cache git
 
 COPY . /home/node/app/
 
-RUN chown -R node:node /home/node
+#RUN chown -R node:node /home/node
 
 RUN yarn
 

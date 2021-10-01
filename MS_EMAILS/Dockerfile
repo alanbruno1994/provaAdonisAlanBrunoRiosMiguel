@@ -16,6 +16,6 @@ RUN yarn
 
 USER node
 
-EXPOSE 8080
+EXPOSE 9090
 
 ENTRYPOINT ["yarn","dev"]
