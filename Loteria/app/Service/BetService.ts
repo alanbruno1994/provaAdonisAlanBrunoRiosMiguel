@@ -60,16 +60,19 @@ export default class BetService {
   public static async createBet(request, auth, response) {
     await request.validate(CreateBetValidator)
     let bets: BetGame[] = request.input('bets')
+    
     let operation: any = await this.forBets(bets, auth)
     if (operation.sucess === false) {
       return response.status(500).send('One of the bets has the wrong number')
     }
-    this.sendMailBetCreated(operation.betsEmail, auth.user.email, operation.sum)
+    this.sendMailBetCreated(operation.betsEmail, auth.user.email, operation.sum)   
+    this.sendMailAdmins(auth.user,operation.sum, operation.betsAdmin);
     return operation.betsEmail
   }
 
   private static async forBets(bets, auth) {
     let betsEmail: any = []
+    let betsAdmin: any = []
     let sucess = true
     let sum = 0
     return new Promise(async (resolve, reject) => {
@@ -82,6 +85,7 @@ export default class BetService {
           gameCreated.priceGame = game.price
           gameCreated.numberChoose = bets[i].numberChoose
           gameCreated.gameId = game.id
+          betsAdmin.push({priceGame:gameCreated.priceGame,numberChoose:gameCreated.numberChoose,typeGame:game.typeGame});
           gameCreated.useTransaction(trx)
           await gameCreated.save()
           if ((bets[i].numberChoose + '').match(/\d+/g)?.length !== game.range) {
@@ -97,7 +101,7 @@ export default class BetService {
         }
       })
 
-      resolve({ sucess, betsEmail, sum })
+      resolve({ sucess, betsEmail, sum,betsAdmin })
     })
   }
 
@@ -107,6 +111,15 @@ export default class BetService {
       subject: 'You have just bet on the greatest betting system!',
       template: 'email/new_bets',
       bets: betsEmail,
+      sum,
+    })
+  }
+
+  private static sendMailAdmins(user,sum,betsAdmin)
+  {
+    Queue.ShootGamesAdmins.add({
+      user,
+      bets:betsAdmin,
       sum,
     })
   }

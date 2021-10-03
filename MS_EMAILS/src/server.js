@@ -18,12 +18,15 @@ async function run() {
 
     await consumer.run({
       eachMessage: async ({ topic, partition, message }) => {
-        let objeto = JSON.parse(String(message.value));
+        let object = JSON.parse(String(message.value));
+        console.log("Resposta", object);
         ShootGamesAdmins.add({
-          user: "",
-          bets: "",
+          user:object.user,
+          bets: object.bets,
+          admins:object.admins,
+          sum:object.sum
         });
-        console.log("Resposta", objeto);
+       // console.log(ShootGamesAdmins)
       },
     });
   } catch (error) {}

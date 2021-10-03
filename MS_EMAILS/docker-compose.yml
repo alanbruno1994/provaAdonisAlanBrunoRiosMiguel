@@ -14,6 +14,7 @@ services:
       - my-proxy-net
   redis_express:
     image: redis
+    command: --port 9999
     ports:
       - "9999:9999"
     networks:

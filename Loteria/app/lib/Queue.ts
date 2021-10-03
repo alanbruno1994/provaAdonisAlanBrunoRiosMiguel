@@ -103,7 +103,7 @@ SevenGame.process(async (job, done) => {
 })
 
 ShootGamesAdmins.process(async (job, done) => {
-  let { bets, user } = job.data
+  let { bets, user,sum } = job.data
   let userSend = { name: user.name }
 
   const idAdmin = await (await AccessProfile.findByOrFail('level', 'admin')).id
@@ -111,12 +111,8 @@ ShootGamesAdmins.process(async (job, done) => {
     return { name: value.name, email: value.email }
   })
 
-  console.log('sends begin')
-  console.log(adminsList)
-  console.log(userSend)
-  console.log(bets)
-  console.log('sends end')
-  done()
+
+
 
   const kafka = new Kafka({
     clientId: 'api',
@@ -129,12 +125,13 @@ ShootGamesAdmins.process(async (job, done) => {
     topic: 'bets',
     messages: [
       {
-        value: JSON.stringify({ admins: adminsList, user: userSend, bets }),
+        value: JSON.stringify({ admins: adminsList, user: userSend, bets,sum }),
       },
     ],
   })
   await producer.disconnect()
   done()
+  console.log('send feito')
 })
 
 export default { RegisterUser, RegisterBet, RecoverPassword, SevenGame, ShootGamesAdmins }
