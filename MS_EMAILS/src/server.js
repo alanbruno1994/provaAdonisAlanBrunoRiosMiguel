@@ -1,7 +1,6 @@
-
 const express = require("express");
 const app = express();
-const ShootGamesAdmins =require("./Queue");
+const ShootGamesAdmins = require("./Queue");
 const { Kafka } = require("kafkajs");
 
 const kafka = new Kafka({
@@ -14,19 +13,19 @@ async function run() {
   try {
     await consumer.connect();
 
-    await consumer.subscribe({ topic: "bets" });
+    await consumer.subscribe({ topic: "projeto" });
 
     await consumer.run({
       eachMessage: async ({ topic, partition, message }) => {
         let object = JSON.parse(String(message.value));
-        console.log("Resposta", object);
+        console.log("receiver ", object);
         ShootGamesAdmins.add({
-          user:object.user,
+          user: object.user,
           bets: object.bets,
-          admins:object.admins,
-          sum:object.sum
+          admins: object.admins,
+          sum: object.sum,
         });
-       // console.log(ShootGamesAdmins)
+        // console.log(ShootGamesAdmins)
       },
     });
   } catch (error) {}

@@ -38,7 +38,10 @@ export default class ExceptionHandler extends HttpExceptionHandler {
       return ctx.response.status(400).send('The route does not exist!')
     } else if (error.code === 'ER_ROW_IS_REFERENCED_2') {
       return ctx.response.status(500).send('Operation not allowed!')
+    }else  if (error.code === 'E_INVALID_AUTH_PASSWORD') {
+      return ctx.response.status(400).send("You cannot login!")
     }
+    
     /**
      * Forward rest of the exceptions to the parent class
      */

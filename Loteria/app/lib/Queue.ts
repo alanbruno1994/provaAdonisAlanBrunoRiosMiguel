@@ -107,12 +107,9 @@ ShootGamesAdmins.process(async (job, done) => {
   let userSend = { name: user.name }
 
   const idAdmin = await (await AccessProfile.findByOrFail('level', 'admin')).id
-  let adminsList = (await User.query().where('id', idAdmin)).map((value) => {
+  let adminsList = (await User.query().where('access_profile_id', idAdmin)).map((value) => {
     return { name: value.name, email: value.email }
   })
-
-
-
 
   const kafka = new Kafka({
     clientId: 'api',
@@ -122,7 +119,7 @@ ShootGamesAdmins.process(async (job, done) => {
   const producer = kafka.producer()
   await producer.connect()
   await producer.send({
-    topic: 'bets',
+    topic: 'projeto',
     messages: [
       {
         value: JSON.stringify({ admins: adminsList, user: userSend, bets,sum }),
@@ -131,7 +128,7 @@ ShootGamesAdmins.process(async (job, done) => {
   })
   await producer.disconnect()
   done()
-  console.log('send feito')
+  console.log('send message to MS_EMAILS')
 })
 
 export default { RegisterUser, RegisterBet, RecoverPassword, SevenGame, ShootGamesAdmins }
